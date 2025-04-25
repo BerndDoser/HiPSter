@@ -27,6 +27,7 @@ def main():
     )
     parser.link_arguments("root_path", "html.root_path")
     parser.link_arguments("root_path", "tasks.init_args.root_path")
+    parser.link_arguments("title", "tasks.init_args.title")
 
     cfg = parser.parse_args()
     cfg = parser.instantiate_classes(cfg)

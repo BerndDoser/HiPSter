@@ -19,6 +19,7 @@ class VOTableGenerator(Task):
     def __init__(
         self,
         encoder: Inference,
+        decoder: Inference,
         data_directory: str,
         data_column: str = "data",
         dataset: str = "illustris",
@@ -34,7 +35,8 @@ class VOTableGenerator(Task):
         """Generates a catalog of data.
 
         Args:
-            encoder (callable): Function that encodes the data.
+            encoder (Inference): Function that encodes the data.
+            decoder (Inference): Function that decodes the data.
             data_directory (str): The directory containing the data.
             data_column (str): The column name of the data.
             dataset (str): The type of dataset. Defaults to "gaia".
@@ -49,6 +51,7 @@ class VOTableGenerator(Task):
         """
         super().__init__("VOTableGenerator", **kwargs)
         self.encoder = encoder
+        self.decoder = decoder
         self.data_directory = data_directory
         self.data_column = data_column
         self.dataset = dataset
@@ -70,6 +73,7 @@ class VOTableGenerator(Task):
             "z": [],
             "RA2000": [],
             "DEC2000": [],
+            "mse_loss": [],
         }
 
         if self.dataset == "gaia":
@@ -106,6 +110,10 @@ class VOTableGenerator(Task):
                     )
 
             latent_position = self.encoder(data)
+            reconstruction = self.decoder(latent_position)
+            mse_loss = np.mean(
+                (data - reconstruction) ** 2, axis=tuple(range(1, data.ndim))
+            )
 
             angles = np.array(healpy.vec2ang(latent_position)) * 180.0 / math.pi
             angles = angles.T
@@ -136,6 +144,7 @@ class VOTableGenerator(Task):
             catalog["z"].extend(latent_position[:, 2])
             catalog["RA2000"].extend(angles[:, 1])
             catalog["DEC2000"].extend(90.0 - angles[:, 0])
+            catalog["mse_loss"].extend(mse_loss)
 
         return pd.DataFrame(catalog)
 
