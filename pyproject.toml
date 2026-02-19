@@ -1,6 +1,6 @@
 [project]
 name = "astro-hipster"
-version = "0.1.0"
+version = "0.1.1"
 description = "Generate HiPS representation"
 authors = [
   {name = "Kai Polsterer", email = "kai.polsterer@h-its.org"},
