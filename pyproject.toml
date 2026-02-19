@@ -13,12 +13,12 @@ readme = "README.md"
 
 requires-python = ">=3.10,<4.0"
 dependencies = [
-    "astropy>=6.1", # version 7 doesn't support python 3.10
+    "astropy>=6.1", # version 7 doesn't support Python 3.10
     "gaiaxpy>=2.1",
     "healpy>=1.18",
     "jsonargparse[omegaconf]>=4.37",
     "matplotlib>=3.10",
-    "onnxruntime-gpu>=1.21",
+    "onnxruntime-gpu>=1.21, <1.24", # version 1.24 doesn't support Python 3.10
     "pandas>2.2",
     "pyarrow>=20.0",
     "scipy>1.15",
