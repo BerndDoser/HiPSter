@@ -1,10 +1,10 @@
-root_path: HiPSter
+root_path: output/IllustrisTNG_SKIRT_SDSS
 overwrite: true
 verbose: true
 
 html:
-  url: http://localhost:8083
-  title: HiPSter representation of Illustris SKIRT SDSS
+  url: https://space.h-its.org
+  title: HiPSter representation of IllustrisTNG SKIRT SDSS
   aladin_lite_version: 3.6.5
 
 tasks:
@@ -17,9 +17,9 @@ tasks:
         class_path: hipster.ImagePlotter
       max_order: 4
       hierarchy: 4
-      hips_id: Illustris
-      hips_name: Illustris model
-      hips_path: illustris/model
+      hips_id: IllustrisTNG SKIRT SDSS
+      hips_name: IllustrisTNG SKIRT SDSS model
+      hips_path: model
 
   # - class_path: hipster.VOTableGenerator
   #   init_args:
