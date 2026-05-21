@@ -1,3 +1,4 @@
+import io
 import math
 import os
 from typing import Optional
@@ -82,15 +83,18 @@ class VOTableGenerator(Task):
 
         dataset = ds.dataset(self.data_directory, format="parquet")
 
-        # Reshape the data if the shape is stored in the metadata.
-        metadata_shape = bytes(self.data_column, "utf8") + b"_shape"
-        if dataset.schema.metadata and metadata_shape in dataset.schema.metadata:
-            shape_string = dataset.schema.metadata[metadata_shape].decode("utf8")
-            shape = shape_string.replace("(", "").replace(")", "").split(",")
-            shape = tuple(map(int, shape))
+        # # Reshape the data if the shape is stored in the metadata.
+        # metadata_shape = bytes(self.data_column, "utf8") + b"_shape"
+        # if dataset.schema.metadata and metadata_shape in dataset.schema.metadata:
+        #     shape_string = dataset.schema.metadata[metadata_shape].decode("utf8")
+        #     shape = shape_string.replace("(", "").replace(")", "").split(",")
+        #     shape = tuple(map(int, shape))
+        shape = (3, 128, 128)
 
         for batch in dataset.to_batches(batch_size=self.batch_size):
-            data = batch[self.data_column].flatten().to_numpy().reshape(-1, *shape).copy().astype(np.float32)
+            data = batch[self.data_column]
+            data = np.stack([np.array(Image.open(io.BytesIO(item.as_py()["bytes"]))) for item in data])
+            data = data.transpose(0, 3, 1, 2).reshape(-1, *shape).copy().astype(np.float32)
 
             # Normalize the data
             for i in range(data.shape[0]):  # batches
@@ -139,16 +143,15 @@ class VOTableGenerator(Task):
         """Store images as jpg files."""
 
         for i in range(len(df)):
-            image = np.array(df[self.data_column][i]).reshape(3, 128, 128).transpose(1, 2, 0) * 255
-            image = Image.fromarray(image.astype(np.uint8), "RGB")
+            image = Image.open(io.BytesIO(df[self.data_column][i]["bytes"]))
             if size:
                 image = image.resize((size, size))
             os.makedirs(
                 os.path.join(
                     self.root_path,
                     output_path,
-                    df["simulation"][i],
-                    df["snapshot"][i],
+                    str(df["simulation"][i]),
+                    str(df["snapshot"][i]),
                 ),
                 exist_ok=True,
             )
@@ -156,9 +159,9 @@ class VOTableGenerator(Task):
                 os.path.join(
                     self.root_path,
                     output_path,
-                    df["simulation"][i],
-                    df["snapshot"][i],
-                    df["subhalo_id"][i] + ".jpg",
+                    str(df["simulation"][i]),
+                    str(df["snapshot"][i]),
+                    str(df["subhalo_id"][i]) + ".jpg",
                 )
             )
 

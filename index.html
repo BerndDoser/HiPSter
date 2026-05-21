@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name='description' content='HiPSter representation of Illustris SKIRT SDSS'>
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width, height=device-height, initial-scale=1.0, user-scalable=no'>
+  <title>HiPSter representation of Illustris SKIRT SDSS</title>
+</head>
+<body>
+    <div id='aladin-lite-div' style='width:500px;height:500px;z-index:1;position:absolute;top:0;left:0;'></div>
+    <div id='overlay' style='width:230px;height:45px;z-index:9;position:absolute;bottom:7px;right:100px;background-color: #ffffffaa;opacity:1.0;'>
+        <a href='https://www.space-coe.eu' target='_blank'><img src='../space-logo.png' height='45'></a>
+        <a href='https://www.h-its.org' target='_blank'><img src='../hits-logo.png' height='45'></a>
+    </div>
+    <script type='text/javascript' src='https://aladin.u-strasbg.fr/AladinLite/api/v3/3.6.5/aladin.js'charset='utf-8'></script>
+    <script type='text/javascript'>
+        var aladin;
+            A.init.then(() => {
+            aladin = A.aladin('#aladin-lite-div', {fullScreen:true, showReticle:false, showZoomControl:true, showFullscreenControl:true, showGotoControl:false, showFrame:false });
+            aladin.removeLayers()
+
+            var imageLayer1 = aladin.createImageSurvey('IllustrisTNG SKIRT SDSS', 'IllustrisTNG SKIRT SDSS model', 'https://space.h-its.org/IllustrisTNG_SKIRT_SDSS/model','equatorial', '4', {imgFormat: 'jpg'});
+            aladin.setImageLayer(imageLayer1);
+
+            var catalogLayer1 = A.catalogFromURL('https://space.h-its.org/IllustrisTNG_SKIRT_SDSS/illustris.vot', {sourceSize:5, onClick: 'showPopup', color: 'red', shape: 'circle', name: ''});
+            aladin.addCatalog(catalogLayer1);
+
+            aladin.setFoV(400.0);
+        });
+    </script>
+</body>
+</html>
