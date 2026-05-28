@@ -5,9 +5,9 @@ from typing import Optional
 import healpy
 import numpy as np
 import pandas as pd
-import pyarrow.dataset as ds
 from astropy.io.votable import writeto
 from astropy.table import Table
+from datasets import load_dataset
 from PIL import Image
 
 from hipster.html_generator import HTMLGenerator
@@ -20,7 +20,7 @@ class VOTableGenerator(Task):
     def __init__(
         self,
         encoder: Inference,
-        data_directory: str,
+        data_path: str,
         data_column: str = "data",
         dataset: str = "illustris",
         output_file: str = "illustris.vot",
@@ -36,7 +36,7 @@ class VOTableGenerator(Task):
 
         Args:
             encoder (callable): Function that encodes the data.
-            data_directory (str): The directory containing the data.
+            data_path (str): The path to the data.
             data_column (str): The column name of the data.
             dataset (str): The type of dataset. Defaults to "gaia".
             output_file (str, optional): The output file name. Defaults to "votable.xml".
@@ -50,7 +50,7 @@ class VOTableGenerator(Task):
         """
         super().__init__("VOTableGenerator", **kwargs)
         self.encoder = encoder
-        self.data_directory = data_directory
+        self.data_path = data_path
         self.data_column = data_column
         self.dataset = dataset
         self.output_file = output_file
@@ -80,26 +80,21 @@ class VOTableGenerator(Task):
             catalog["snapshot"] = []
             catalog["subhalo_id"] = []
 
-        dataset = ds.dataset(self.data_directory, format="parquet")
+        ds = load_dataset(self.data_path)
 
-        # Reshape the data if the shape is stored in the metadata.
-        metadata_shape = bytes(self.data_column, "utf8") + b"_shape"
-        if dataset.schema.metadata and metadata_shape in dataset.schema.metadata:
-            shape_string = dataset.schema.metadata[metadata_shape].decode("utf8")
-            shape = shape_string.replace("(", "").replace(")", "").split(",")
-            shape = tuple(map(int, shape))
+        if self.dataset == "gaia":
+            ds.map(_generate_gaia_catalog, num_proc=os.cpu_count())
+        elif self.dataset == "illustris":
+            ds.map(_generate_illustris_catalog, num_proc=os.cpu_count())
+        else:
+            raise ValueError(f"Unsupported dataset: {self.dataset}")
 
-        for batch in dataset.to_batches(batch_size=self.batch_size):
-            data = batch[self.data_column].flatten().to_numpy().reshape(-1, *shape).copy().astype(np.float32)
-
-            # Normalize the data
-            for i in range(data.shape[0]):  # batches
-                for j in range(data.shape[1]):  # channels
-                    data[i][j] = (data[i][j] - data[i][j].min()) / (data[i][j].max() - data[i][j].min())
+        for batch in dataset.iter(batch_size=self.batch_size):
+            data = np.array(batch[self.data_column]).flatten().reshape(-1, *shape).copy().astype(np.float32)
 
             if self.dataset == "illustris":
-                self.__images_to_jpg(batch.to_pandas(), "images")
-                self.__images_to_jpg(batch.to_pandas(), "thumbnails", size=64)
+                self.__images_to_jpg(pd.DataFrame(batch), "images")
+                self.__images_to_jpg(pd.DataFrame(batch), "thumbnails", size=64)
 
             latent_position = self.encoder(data)
 
@@ -112,7 +107,7 @@ class VOTableGenerator(Task):
                         f"<a href='{self.url}/{self.title}/images/{str(source_id)}.jpg' target='_blank'>"
                         + f"<img src='{self.url}/{self.title}/thumbnails/{str(source_id)}.jpg'></a>"
                     )
-                catalog["source_id"].extend(batch["source_id"].to_pylist())
+                catalog["source_id"].extend(list(batch["source_id"]))
             elif self.dataset == "illustris":
                 for simulation, snapshot, subhalo_id in zip(
                     batch["simulation"], batch["snapshot"], batch["subhalo_id"]
@@ -123,9 +118,9 @@ class VOTableGenerator(Task):
                         + f"<img src='{self.url}/{self.title}/thumbnails/{simulation}/{snapshot}/"
                         + f"{str(subhalo_id)}.jpg'></a>"
                     )
-                catalog["simulation"].extend(batch["simulation"].to_pylist())
-                catalog["snapshot"].extend(batch["snapshot"].to_pylist())
-                catalog["subhalo_id"].extend(batch["subhalo_id"].to_pylist())
+                catalog["simulation"].extend(list(batch["simulation"]))
+                catalog["snapshot"].extend(list(batch["snapshot"]))
+                catalog["subhalo_id"].extend(list(batch["subhalo_id"]))
 
             catalog["x"].extend(latent_position[:, 0])
             catalog["y"].extend(latent_position[:, 1])
