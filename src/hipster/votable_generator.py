@@ -66,7 +66,7 @@ class VOTableGenerator(Task):
         """Generates the catalog."""
 
         catalog = {
-            "preview": [],
+            # "preview": [],
             "x": [],
             "y": [],
             "z": [],
@@ -130,6 +130,8 @@ class VOTableGenerator(Task):
                 catalog["simulation"].extend(batch["simulation"].to_pylist())
                 catalog["snapshot"].extend(batch["snapshot"].to_pylist())
                 catalog["subhalo_id"].extend(batch["subhalo_id"].to_pylist())
+            # elif self.dataset == "celebrities":
+            #     catalog["preview"].extend(batch["label"].to_pylist())
 
             catalog["x"].extend(latent_position[:, 0])
             catalog["y"].extend(latent_position[:, 1])

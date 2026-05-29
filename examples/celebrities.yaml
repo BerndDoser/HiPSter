@@ -1,0 +1,33 @@
+root_path: output/celebrities
+overwrite: true
+verbose: true
+
+html:
+  url: http://localhost:8083
+  title: Celebrities
+  aladin_lite_version: 3.6.5
+
+tasks:
+  - class_path: hipster.HiPSGenerator
+    init_args:
+      decoder:
+        model_path: /home/doserbd/celeb/model/decoder.onnx
+        input_name: z
+      image_maker:
+        class_path: hipster.ImagePlotter
+      max_order: 4
+      hierarchy: 4
+      hips_id: Celebrities
+      hips_name: Celebrities model
+      hips_path: model
+
+  - class_path: hipster.VOTableGenerator
+    init_args:
+      encoder:
+        model_path: /home/doserbd/celeb/model/encoder.onnx
+      data_directory: /home/doserbd/celeb/data/train-00000-of-00001.parquet
+      data_column: image
+      dataset: celebrities
+      color: red
+      shape: circle
+      size: 5

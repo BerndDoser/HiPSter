@@ -9,7 +9,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "src/hipster/main.py",
-            "args": "--config examples/config_work.yaml",
+            "args": "--config examples/celebrities.yaml",
             "console": "integratedTerminal",
             "justMyCode": true
         },
