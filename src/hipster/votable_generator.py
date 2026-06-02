@@ -89,17 +89,18 @@ class VOTableGenerator(Task):
         #     shape_string = dataset.schema.metadata[metadata_shape].decode("utf8")
         #     shape = shape_string.replace("(", "").replace(")", "").split(",")
         #     shape = tuple(map(int, shape))
-        shape = (3, 128, 128)
 
         for batch in dataset.to_batches(batch_size=self.batch_size):
             data = batch[self.data_column]
-            data = np.stack([np.array(Image.open(io.BytesIO(item.as_py()["bytes"]))) for item in data])
-            data = data.transpose(0, 3, 1, 2).reshape(-1, *shape).copy().astype(np.float32)
+            images = []
+            for item in batch["image"]:
+                img_bytes = item["bytes"].as_py()
+                img = Image.open(io.BytesIO(img_bytes)).convert("RGB").resize((128, 128))
+                images.append(np.array(img))
 
-            # Normalize the data
-            for i in range(data.shape[0]):  # batches
-                for j in range(data.shape[1]):  # channels
-                    data[i][j] = (data[i][j] - data[i][j].min()) / (data[i][j].max() - data[i][j].min())
+            data = np.stack(images)           # (N, 128, 128, 3)
+            data = data.transpose(0, 3, 1, 2) # (N, 3, 128, 128)
+            data = (data / 255.0).astype("float32") # Normalize to [0, 1]
 
             if self.dataset == "illustris":
                 self.__images_to_jpg(batch.to_pandas(), "images")
