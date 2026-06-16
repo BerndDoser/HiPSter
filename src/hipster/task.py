@@ -4,15 +4,27 @@ from hipster.html_generator import HTMLGenerator
 
 
 class Task(ABC):
-    def __init__(self, name, root_path: str = "", title: str = "") -> None:
-        """Base class for all tasks.
-        Args:
-            name (str): The name of the task.
-        """
+    """Base class for all tasks.
+
+    Args:
+        name (str): The name of the task.
+        root_path (str): The root path for the task. Defaults to "".
+        title (str): The title of the task. Defaults to "".
+        skip (bool): Whether to skip the task. Defaults to False.
+    """
+
+    def __init__(
+        self,
+        name,
+        root_path: str = "",
+        title: str = "",
+        skip: bool = False,
+    ) -> None:
         super().__init__()
         self.name = name
         self.root_path = root_path
         self.title = title
+        self.skip = skip
 
     @abstractmethod
     def execute(self) -> None:

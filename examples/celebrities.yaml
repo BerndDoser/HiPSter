@@ -1,0 +1,68 @@
+root_path: output/celebrities
+overwrite: true
+verbose: true
+
+html:
+  # url: http://localhost:8083
+  url: https://space.h-its.org/celebrities
+  title: Celebrities
+  aladin_lite_version: 3.6.5
+
+tasks:
+  - class_path: hipster.DatasetProjection
+    init_args:
+      encoder:
+        model_path: data/celebrities-1000/model/encoder.onnx
+      data_directory: data/celebrities-1000/dataset/data/train-00000-of-00001.parquet
+      image_maker:
+        class_path: hipster.ImagePlotter
+      max_order: 4
+      hierarchy: 4
+      hips_id: Celebrities
+      hips_name: Celebrities projection dewarped
+      hips_path: projection_dewarped
+      distortion_correction: true
+      skip: true
+
+  - class_path: hipster.DatasetProjection
+    init_args:
+      encoder:
+        model_path: data/celebrities-1000/model/encoder.onnx
+      data_directory: data/celebrities-1000/dataset/data/train-00000-of-00001.parquet
+      image_maker:
+        class_path: hipster.ImagePlotter
+      max_order: 4
+      hierarchy: 4
+      hips_id: Celebrities
+      hips_name: Celebrities projection
+      hips_path: projection
+      distortion_correction: false
+      skip: true
+
+  - class_path: hipster.HiPSGenerator
+    init_args:
+      decoder:
+        model_path: data/celebrities-1000/model/decoder.onnx
+        input_name: z
+      image_maker:
+        class_path: hipster.ImagePlotter
+      max_order: 4
+      hierarchy: 4
+      hips_id: Celebrities
+      hips_name: Celebrities model
+      hips_path: model
+      distortion_correction: true
+      skip: true
+
+  - class_path: hipster.VOTableGenerator
+    init_args:
+      encoder:
+        model_path: data/celebrities-1000/model/encoder.onnx
+      data_directory: data/celebrities-1000/dataset/data/train-00000-of-00001.parquet
+      data_column: image
+      dataset: celebrities
+      output_file: celebrities.vot
+      color: red
+      shape: circle
+      size: 5
+      skip: false

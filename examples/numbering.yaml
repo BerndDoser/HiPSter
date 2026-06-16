@@ -1,0 +1,18 @@
+root_path: output/numbering
+overwrite: true
+verbose: true
+
+html:
+  url: http://localhost:8083
+  title: Numbering
+  aladin_lite_version: 3.6.5
+
+tasks:
+  - class_path: hipster.NumberedHiPSGenerator
+    init_args:
+      max_order: 4
+      hierarchy: 2
+      hips_id: Numbering
+      hips_name: Numbering
+      hips_path: numbering
+      distortion_correction: false

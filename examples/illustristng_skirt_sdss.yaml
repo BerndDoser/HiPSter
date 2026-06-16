@@ -1,0 +1,31 @@
+root_path: output/IllustrisTNG_SKIRT_SDSS
+overwrite: true
+verbose: true
+
+html:
+  url: https://space.h-its.org
+  title: HiPSter representation of IllustrisTNG SKIRT SDSS
+  aladin_lite_version: 3.6.5
+
+tasks:
+  - class_path: hipster.HiPSGenerator
+    init_args:
+      decoder:
+        model_path: /home/bernd/.cache/huggingface/hub/models--bernddoser--IllustrisTNG_SKIRT_SDSS/snapshots/648b7a1e38e0f92e01ec88b4c4b8495408e3d83f/illustris_vae_resnet18/decoder.onnx
+        input_name: z
+      image_maker:
+        class_path: hipster.ImagePlotter
+      max_order: 4
+      hierarchy: 4
+      hips_id: IllustrisTNG SKIRT SDSS
+      hips_name: IllustrisTNG SKIRT SDSS model
+      hips_path: model
+
+  # - class_path: hipster.VOTableGenerator
+  #   init_args:
+  #     encoder:
+  #       model_path: /home/bernd/.cache/huggingface/hub/models--bernddoser--IllustrisTNG_SKIRT_SDSS/snapshots/648b7a1e38e0f92e01ec88b4c4b8495408e3d83f/illustris_vae_resnet18/encoder.onnx
+  #     data_directory: data/HITS-AIN/IllustrisTNG_SKIRT_SDSS
+  #     color: red
+  #     shape: circle
+  #     size: 5

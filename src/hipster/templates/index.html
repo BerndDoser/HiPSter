@@ -7,24 +7,29 @@
 </head>
 <body>
     <div id='aladin-lite-div' style='width:500px;height:500px;'></div>
+    <div id='overlay' style='width:230px;height:45px;z-index:9;position:absolute;bottom:7px;right:100px;background-color: #ffffffaa;opacity:1.0;'>
+        <a href='https://www.space-coe.eu' target='_blank'><img src='https://space.h-its.org/space-logo.png' height='45'></a>
+        <a href='https://www.h-its.org' target='_blank'><img src='https://space.h-its.org/hits-logo.png' height='45'></a>
+    </div>
     <script type='text/javascript' src='https://aladin.u-strasbg.fr/AladinLite/api/v3/{{ aladin_lite_version }}/aladin.js'charset='utf-8'></script>
     <script type='text/javascript'>
         var aladin;
             A.init.then(() => {
-            aladin = A.aladin('#aladin-lite-div');
+            aladin = A.aladin('#aladin-lite-div', {fullScreen:true});
             aladin.removeLayers()
 
             {% for image_layer in image_layers %}
-            var imageLayer{{ loop.index }} = aladin.createImageSurvey('{{ image_layer.hips_id }}', '{{ image_layer.hips_name }}', '{{ image_layer.hips_url }}','equatorial', '{{ image_layer.hips_max_order }}', {imgFormat: 'jpg'});
+            let imageLayer{{ loop.index }} = aladin.newImageSurvey('{{ image_layer.hips_url }}', {name: '{{ image_layer.hips_name }}'});
             aladin.setImageLayer(imageLayer{{ loop.index }});
             {% endfor %}
 
             {% for votable in votables %}
             var catalogLayer{{ loop.index }} = A.catalogFromURL('{{ votable.url }}', {sourceSize:{{ votable.size }}, onClick: 'showPopup', color: '{{ votable.color }}', shape: '{{ votable.shape }}', name: '{{ votable.name }}'});
             aladin.addCatalog(catalogLayer{{ loop.index }});
+            catalogLayer{{ loop.index }}.hide();
             {% endfor %}
 
-            aladin.setFoV(180.0);
+            aladin.setFoV(400.0);
         });
     </script>
 </body>

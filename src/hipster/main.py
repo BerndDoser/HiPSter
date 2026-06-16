@@ -38,7 +38,7 @@ def main():
         print("Base URL:", cfg.html.url)
         print("Tasks:")
         for task in cfg.tasks:
-            print(f"  - {task.__class__.__name__}")
+            print(f"  - {task.name}{' [SKIPPED]' if task.skip else ''}")
 
     if cfg.tasks is None:
         exit("No tasks provided. Please specify tasks to execute.")
@@ -48,7 +48,7 @@ def main():
     # Execute tasks
     for task in cfg.tasks:
         task.register(cfg.html)
-        if not cfg.only_html:
+        if not cfg.only_html and not task.skip:
             task.execute()
 
     # Generate HTML main page

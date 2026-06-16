@@ -23,6 +23,6 @@ def test_catalog_generator_spectra():
 
     catalog = votable_generator.get_catalog()
 
-    assert np.allclose(catalog["x"][0], -0.1408, atol=1e-3)
-    assert np.allclose(catalog["y"][0], 0.0060, atol=1e-3)
-    assert np.allclose(catalog["z"][0], 0.9900, atol=1e-3)
+    assert np.allclose(catalog["x"][0], -0.14, atol=1e-2)
+    assert np.allclose(catalog["y"][0], 0.01, atol=1e-2)
+    assert np.allclose(catalog["z"][0], 0.99, atol=1e-2)

@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: HiPSter",
+            "name": "Python: HiPSter celebrities",
             "type": "debugpy",
             "request": "launch",
             "program": "src/hipster/main.py",
-            "args": "--config examples/config_work.yaml",
+            "args": "--config examples/celebrities.yaml",
             "console": "integratedTerminal",
             "justMyCode": true
         },
