@@ -6,9 +6,8 @@ from hipster import Inference, VOTableGenerator
 def test_catalog_generator_image(tmp_path):
     VOTableGenerator(
         encoder=Inference("tests/models/illustris_encoder.onnx"),
-        data_directory="tests/data/illustris",
+        data_directory="tests/data/illustris/single-entry.parquet",
         dataset="illustris",
-        data_column="data",
         root_path=tmp_path,
     ).execute()
 
