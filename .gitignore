@@ -3,7 +3,7 @@ __pycache__
 *.ckpt
 *.egg-info/
 *.vot
-data
+/data/
 dist/
 examples/config_work.yaml
 output/
