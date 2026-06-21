@@ -22,7 +22,6 @@ tasks:
       hips_name: Celebrities projection dewarped
       hips_path: projection_dewarped
       distortion_correction: true
-      skip: true
 
   - class_path: hipster.DatasetProjection
     init_args:
@@ -37,7 +36,6 @@ tasks:
       hips_name: Celebrities projection
       hips_path: projection
       distortion_correction: false
-      skip: true
 
   - class_path: hipster.HiPSGenerator
     init_args:
@@ -52,17 +50,14 @@ tasks:
       hips_name: Celebrities model
       hips_path: model
       distortion_correction: true
-      skip: true
 
   - class_path: hipster.VOTableGenerator
     init_args:
       encoder:
         model_path: data/celebrities-1000/model/encoder.onnx
       data_directory: data/celebrities-1000/dataset/data/train-00000-of-00001.parquet
-      data_column: image
       dataset: celebrities
       output_file: celebrities.vot
       color: red
       shape: circle
       size: 5
-      skip: false

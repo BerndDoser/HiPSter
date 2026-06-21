@@ -49,3 +49,11 @@ if __name__ == "__main__":
     REPO_ID = "HITS-AIN/Celebrities"
     LOCAL_DIRECTORY = "./data/celebrities-1000/model"
     download_onnx_models(repo_id=REPO_ID, local_dir=LOCAL_DIRECTORY, hf_token=HF_TOKEN)
+
+    REPO_ID = "HITS-AIN/IllustrisTNG_SKIRT_SDSS"
+    LOCAL_DIRECTORY = "./data/illustris_tng_skirt_sdss/dataset"
+    download_parquet_files(repo_id=REPO_ID, local_dir=LOCAL_DIRECTORY, hf_token=HF_TOKEN)
+
+    REPO_ID = "HITS-AIN/IllustrisTNG_SKIRT_SDSS"
+    LOCAL_DIRECTORY = "./data/illustris_tng_skirt_sdss/model"
+    download_onnx_models(repo_id=REPO_ID, local_dir=LOCAL_DIRECTORY, hf_token=HF_TOKEN)

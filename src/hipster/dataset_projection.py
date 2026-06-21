@@ -57,6 +57,7 @@ class DatasetProjection(Task):
         super().__init__("DatasetProjection", **kwargs)
         self.encoder = encoder
         self.image_maker = image_maker
+        self.data_directory = data_directory
         self.data_column = data_column
         self.tile_size = tile_size
         self.model_input_size = model_input_size
@@ -70,12 +71,6 @@ class DatasetProjection(Task):
         self.hips_name = hips_name
         self.distortion_correction = distortion_correction
         self.batch_size = batch_size
-
-        dataset = ds.dataset(data_directory, format="parquet")
-        table = dataset.to_table(columns=[self.data_column])
-        self.num_rows = table.num_rows
-        self.images = table[self.data_column]
-
         self.catalog = None
 
     def __create_folders(
@@ -188,8 +183,12 @@ hips_frame           = equatorial
 
         if self.catalog is None:
             print("Calculating catalog...")
+            dataset = ds.dataset(self.data_directory, format="parquet")
+            table = dataset.to_table(columns=[self.data_column])
+            self.num_rows = table.num_rows
+            self.images = table[self.data_column]
             self.catalog = []
-            for batch in ds.dataset.to_batches(batch_size=self.batch_size):
+            for batch in dataset.to_batches(batch_size=self.batch_size):
                 data = batch[self.data_column]
                 images = []
                 for item in batch[self.data_column]:

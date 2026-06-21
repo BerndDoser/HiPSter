@@ -24,7 +24,7 @@ class VOTableGenerator(Task):
         self,
         encoder: Inference,
         data_directory: str,
-        data_column: str = "data",
+        data_column: str = "image",
         dataset: str = "illustris",
         output_file: str = "illustris.vot",
         batch_size: int = 256,
@@ -39,7 +39,7 @@ class VOTableGenerator(Task):
         Args:
             encoder (callable): Function that encodes the data.
             data_directory (str): The directory containing the data.
-            data_column (str): The column name of the data.
+            data_column (str): The column name of the data. Defaults to "image".
             dataset (str): The type of dataset. Defaults to "gaia".
             output_file (str, optional): The output file name. Defaults to "votable.xml".
             batch_size (int, optional): The batch size to use. Defaults to 256.
@@ -108,17 +108,16 @@ class VOTableGenerator(Task):
 
         row_offset = 0
         for batch in dataset.to_batches(batch_size=self.batch_size):
-            if self.dataset == "celebrities":
+            if self.dataset in ["celebrities", "illustris"]:
                 data = batch[self.data_column]
                 images = []
-                for item in batch["image"]:
+                for item in batch[self.data_column]:
                     img_bytes = item["bytes"].as_py()
                     img = Image.open(io.BytesIO(img_bytes)).convert("RGB").resize((128, 128))
                     images.append(np.array(img))
-
-                data = np.stack(images)  # (N, 128, 128, 3)
-                data = data.transpose(0, 3, 1, 2)  # (N, 3, 128, 128)
-                data = (data / 255.0).astype("float32")  # Normalize to [0, 1]
+                data = np.stack(images)
+                data = data.transpose(0, 3, 1, 2)
+                data = (data / 255.0).astype("float32")
             else:
                 data = batch[self.data_column].flatten().to_numpy().reshape(-1, *shape).copy().astype(np.float32)
 
@@ -127,12 +126,9 @@ class VOTableGenerator(Task):
                     for j in range(data.shape[1]):  # channels
                         data[i][j] = (data[i][j] - data[i][j].min()) / (data[i][j].max() - data[i][j].min())
 
-            if self.dataset == "illustris":
-                self.__images_to_jpg(batch.to_pandas(), "images")
-                self.__images_to_jpg(batch.to_pandas(), "thumbnails", size=64)
-
-            if self.dataset == "celebrities":
-                self.__celebrities_to_jpg(batch.to_pandas(), "thumbnails", offset=row_offset, size=64)
+            if self.dataset in ["celebrities", "illustris"]:
+                self.__generate_images(batch.to_pandas(), "images", offset=row_offset)
+                self.__generate_images(batch.to_pandas(), "thumbnails", offset=row_offset, size=64)
 
             latent_position = self.encoder(data)
 
@@ -176,34 +172,7 @@ class VOTableGenerator(Task):
 
         return pd.DataFrame(catalog)
 
-    def __images_to_jpg(self, df: pd.DataFrame, output_path: str, size: Optional[int] = None) -> None:
-        """Store images as jpg files."""
-
-        for i in range(len(df)):
-            image = np.array(df[self.data_column][i]).reshape(3, 128, 128).transpose(1, 2, 0) * 255
-            image = Image.fromarray(image.astype(np.uint8), "RGB")
-            if size:
-                image = image.resize((size, size))
-            os.makedirs(
-                os.path.join(
-                    self.root_path,
-                    output_path,
-                    df["simulation"][i],
-                    df["snapshot"][i],
-                ),
-                exist_ok=True,
-            )
-            image.save(
-                os.path.join(
-                    self.root_path,
-                    output_path,
-                    df["simulation"][i],
-                    df["snapshot"][i],
-                    df["subhalo_id"][i] + ".jpg",
-                )
-            )
-
-    def __celebrities_to_jpg(
+    def __generate_images(
         self, df: pd.DataFrame, output_path: str, offset: int = 0, size: Optional[int] = None
     ) -> None:
         """Store celebrity images as jpg files."""
@@ -214,13 +183,34 @@ class VOTableGenerator(Task):
             image = Image.open(io.BytesIO(img_bytes)).convert("RGB")
             if size:
                 image = image.resize((size, size))
-            image.save(
-                os.path.join(
-                    self.root_path,
-                    output_path,
-                    str(offset + i) + ".jpg",
+
+            if self.dataset == "illustris":
+                os.makedirs(
+                    os.path.join(
+                        self.root_path,
+                        output_path,
+                        str(df["simulation"][i]),
+                        str(df["snapshot"][i]),
+                    ),
+                    exist_ok=True,
                 )
-            )
+                image.save(
+                    os.path.join(
+                        self.root_path,
+                        output_path,
+                        str(df["simulation"][i]),
+                        str(df["snapshot"][i]),
+                        str(df["subhalo_id"][i]) + ".jpg",
+                    )
+                )
+            else:
+                image.save(
+                    os.path.join(
+                        self.root_path,
+                        output_path,
+                        str(offset + i) + ".jpg",
+                    )
+                )
 
     def execute(self) -> None:
         print(f"Executing task: {self.name}")
