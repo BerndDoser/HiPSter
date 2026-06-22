@@ -57,3 +57,11 @@ if __name__ == "__main__":
     REPO_ID = "HITS-AIN/IllustrisTNG_SKIRT_SDSS"
     LOCAL_DIRECTORY = "./data/illustris_tng_skirt_sdss/model"
     download_onnx_models(repo_id=REPO_ID, local_dir=LOCAL_DIRECTORY, hf_token=HF_TOKEN)
+
+    REPO_ID = "valhalla/emoji-dataset"
+    LOCAL_DIRECTORY = "./data/emoji/dataset"
+    download_parquet_files(repo_id=REPO_ID, local_dir=LOCAL_DIRECTORY, hf_token=HF_TOKEN)
+
+    REPO_ID = "bernddoser/emoji"
+    LOCAL_DIRECTORY = "./data/emoji/model"
+    download_onnx_models(repo_id=REPO_ID, local_dir=LOCAL_DIRECTORY, hf_token=HF_TOKEN)

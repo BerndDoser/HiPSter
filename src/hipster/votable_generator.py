@@ -84,7 +84,7 @@ class VOTableGenerator(Task):
             catalog["x"] = []
             catalog["y"] = []
             catalog["z"] = []
-        elif self.dataset == "celebrities":
+        elif self.dataset in ["celebrities", "emoji"]:
             catalog["preview"] = []
             catalog["name"] = []
             catalog["RA2000"] = []
@@ -108,7 +108,7 @@ class VOTableGenerator(Task):
 
         row_offset = 0
         for batch in dataset.to_batches(batch_size=self.batch_size):
-            if self.dataset in ["celebrities", "illustris"]:
+            if self.dataset in ["illustris", "celebrities", "emoji"]:
                 data = batch[self.data_column]
                 images = []
                 for item in batch[self.data_column]:
@@ -126,7 +126,7 @@ class VOTableGenerator(Task):
                     for j in range(data.shape[1]):  # channels
                         data[i][j] = (data[i][j] - data[i][j].min()) / (data[i][j].max() - data[i][j].min())
 
-            if self.dataset in ["celebrities", "illustris"]:
+            if self.dataset in ["illustris", "celebrities", "emoji"]:
                 self.__generate_images(batch.to_pandas(), "images", offset=row_offset)
                 self.__generate_images(batch.to_pandas(), "thumbnails", offset=row_offset, size=64)
 
@@ -162,10 +162,17 @@ class VOTableGenerator(Task):
                     )
                 catalog["name"].extend([names[i] for i in batch["label"].to_pylist()])
                 row_offset += len(batch)
+            elif self.dataset == "emoji":
+                for i in range(len(batch)):
+                    catalog["preview"].append(
+                        f"<img src='{self.url}/{self.title}/thumbnails/{str(row_offset + i)}.jpg'>"
+                    )
+                catalog["name"].extend(batch["text"].to_pylist())
+                row_offset += len(batch)
 
             catalog["RA2000"].extend(angles[:, 1])
             catalog["DEC2000"].extend(90.0 - angles[:, 0])
-            if self.dataset != "celebrities":
+            if self.dataset in ["illustris", "gaia"]:
                 catalog["x"].extend(latent_position[:, 0])
                 catalog["y"].extend(latent_position[:, 1])
                 catalog["z"].extend(latent_position[:, 2])
@@ -175,7 +182,7 @@ class VOTableGenerator(Task):
     def __generate_images(
         self, df: pd.DataFrame, output_path: str, offset: int = 0, size: Optional[int] = None
     ) -> None:
-        """Store celebrity images as jpg files."""
+        """Store images as jpg files."""
 
         os.makedirs(os.path.join(self.root_path, output_path), exist_ok=True)
         for i in range(len(df)):
