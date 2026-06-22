@@ -50,8 +50,7 @@ tasks:
       hips_id: Emoji
       hips_name: Emoji model
       hips_path: model
-      distortion_correction: true
-      skip: true
+      distortion_correction: false
 
   - class_path: hipster.VOTableGenerator
     init_args:
@@ -63,3 +62,4 @@ tasks:
       color: red
       shape: circle
       size: 5
+      skip: true
