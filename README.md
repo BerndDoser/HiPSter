@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/HITS-AIN/hipster/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/HITS-AIN/hipster/actions/workflows/python-package.yml?branch=main)
-[![Documentation Status](https://readthedocs.org/projects/astro-hipster/badge/?version=latest)](https://astro-hipster.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://img.shields.io/readthedocs/astro-hipster/latest)](https://astro-hipster.readthedocs.io/en/latest/?badge=latest)
 ![versions](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue)
 
 # HiPSter
