@@ -20,7 +20,7 @@ dependencies = [
     "matplotlib>=3.10",
     "onnxruntime>=1.21",
     "pandas>2.2",
-    "pyarrow>=20.0",
+    "pyarrow>=26.0.0",
     "scipy>1.15",
     "tqdm>=4.67",
     "jinja2>3.1",
