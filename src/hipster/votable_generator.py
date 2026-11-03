@@ -2,6 +2,7 @@ import io
 import json
 import math
 import os
+from collections.abc import Iterator
 
 import healpy
 import numpy as np
@@ -61,37 +62,32 @@ class VOTableGenerator(Task):
         self.shape = shape
         self.size = size
 
+    def _catalog_columns(self) -> list[str]:
+        """Returns the column names of the catalog."""
+        if self.dataset == "gaia":
+            return ["preview", "source_id", "RA2000", "DEC2000", "x", "y", "z"]
+        if self.dataset == "illustris":
+            return ["preview", "simulation", "snapshot", "subhalo_id", "RA2000", "DEC2000", "x", "y", "z"]
+        if self.dataset in ["celebrities", "emoji"]:
+            return ["preview", "name", "RA2000", "DEC2000"]
+        raise ValueError(f"Unknown dataset: {self.dataset}")
+
+    def _open_dataset(self) -> ds.Dataset:
+        """Opens the input dataset."""
+        return ds.dataset(self.data_directory, format="parquet")
+
     def get_catalog(self) -> pd.DataFrame:
         """Generates the catalog."""
+        batches = list(self.iter_catalog())
+        if not batches:
+            return pd.DataFrame(columns=self._catalog_columns())
+        return pd.concat(batches, ignore_index=True)
 
-        catalog = {}
-        if self.dataset == "gaia":
-            catalog["preview"] = []
-            catalog["source_id"] = []
-            catalog["RA2000"] = []
-            catalog["DEC2000"] = []
-            catalog["x"] = []
-            catalog["y"] = []
-            catalog["z"] = []
-        elif self.dataset == "illustris":
-            catalog["preview"] = []
-            catalog["simulation"] = []
-            catalog["snapshot"] = []
-            catalog["subhalo_id"] = []
-            catalog["RA2000"] = []
-            catalog["DEC2000"] = []
-            catalog["x"] = []
-            catalog["y"] = []
-            catalog["z"] = []
-        elif self.dataset in ["celebrities", "emoji"]:
-            catalog["preview"] = []
-            catalog["name"] = []
-            catalog["RA2000"] = []
-            catalog["DEC2000"] = []
-        else:
-            raise ValueError(f"Unknown dataset: {self.dataset}")
+    def iter_catalog(self) -> Iterator[pd.DataFrame]:
+        """Generates the catalog batch-wise, keeping only one batch in memory."""
 
-        dataset = ds.dataset(self.data_directory, format="parquet")
+        columns = self._catalog_columns()
+        dataset = self._open_dataset()
 
         # If the dataset is Celebrities, we need to load it using the Hugging Face datasets library to get the labels.
         if self.dataset == "celebrities":
@@ -107,6 +103,7 @@ class VOTableGenerator(Task):
 
         row_offset = 0
         for batch in dataset.to_batches(batch_size=self.batch_size):
+            catalog = {column: [] for column in columns}
             if self.dataset in ["illustris", "celebrities", "emoji"]:
                 data = batch[self.data_column]
                 images = []
@@ -172,7 +169,7 @@ class VOTableGenerator(Task):
                 catalog["y"].extend(latent_position[:, 1])
                 catalog["z"].extend(latent_position[:, 2])
 
-        return pd.DataFrame(catalog)
+            yield pd.DataFrame(catalog)
 
     def __generate_images(self, df: pd.DataFrame, output_path: str, offset: int = 0, size: int | None = None) -> None:
         """Store images as jpg files."""

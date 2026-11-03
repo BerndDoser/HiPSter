@@ -2,6 +2,7 @@ import importlib.metadata
 
 from .absorption_line_plotter import AbsorptionLinePlotter
 from .dataset_projection import DatasetProjection
+from .hips_catalog_generator import HiPSCatalogGenerator
 from .hips_generator import HiPSGenerator
 from .html_generator import HTMLGenerator
 from .image_generator import ImageGenerator
@@ -18,6 +19,7 @@ __all__ = [
     "AbsorptionLinePlotter",
     "DatasetProjection",
     "HTMLGenerator",
+    "HiPSCatalogGenerator",
     "HiPSGenerator",
     "ImageGenerator",
     "ImagePlotter",

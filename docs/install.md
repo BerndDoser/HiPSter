@@ -34,6 +34,16 @@ the `cuda` extra:
 pip install "astro-hipster[cuda]"
 ```
 
+## HiPS catalogs
+
+The {class}`~hipster.HiPSCatalogGenerator` builds its catalog tiles with
+[hipscatalog_gen](https://github.com/linea-it/hipscatalog_gen), which is installed with the
+`catalog` extra:
+
+```bash
+pip install "astro-hipster[catalog]"
+```
+
 ## Verify the installation
 
 ```bash

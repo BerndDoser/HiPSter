@@ -50,6 +50,13 @@ uv run hipster --config examples/numbering.yaml
 uv run --extra dev pytest
 ```
 
+The build test of the {class}`~hipster.HiPSCatalogGenerator` is skipped unless the `catalog`
+extra is installed, too:
+
+```bash
+uv run --extra dev --extra catalog pytest
+```
+
 Run a single test file or test:
 
 ```bash

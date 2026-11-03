@@ -25,8 +25,8 @@ Every value of the config file can also be set or overridden on the command line
 A configuration file has three parts:
 
 - `root_path`: the output directory, which is passed on to the HTML page and all tasks.
-- `html`: settings for the generated Aladin Lite page (`url`, `title`, `aladin_lite_version`),
-  see {class}`hipster.HTMLGenerator` and {doc}`visualization`.
+- `html`: settings for the generated Aladin Lite page (`url`, `title`, `aladin_lite_version`,
+  `aladin_lite_url`), see {class}`hipster.HTMLGenerator` and {doc}`visualization`.
 - `tasks`: a list of {doc}`tasks <tasks>`, each given by a `class_path` and its `init_args`. They
   are executed in order and each one adds an image layer or a catalog to the HTML page. Set
   `skip: true` to keep a task on the page without re-running it.

@@ -13,6 +13,7 @@ Tasks
    HiPSGenerator
    DatasetProjection
    VOTableGenerator
+   HiPSCatalogGenerator
    NumberedHiPSGenerator
    Task
 

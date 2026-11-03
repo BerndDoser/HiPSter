@@ -43,3 +43,19 @@ tasks:
       color: red
       shape: circle
       size: 5
+
+  - class_path: hipster.HiPSCatalogGenerator
+    init_args:
+      encoder:
+        model_path: data/illustris_tng_skirt_sdss/model/vae/resnet18/Perceptual/S2/encoder.onnx
+      data_directory: data/illustris_tng_skirt_sdss/dataset/
+      catalog_name: IllustrisTNG SKIRT SDSS HiPS catalog
+      hips_path: catalog
+      level_limit: 8
+      color: orange
+      shape: circle
+      size: 5
+      cluster:
+        mode: local
+        n_workers: 4
+        memory_per_worker: 4GB

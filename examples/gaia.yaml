@@ -51,3 +51,27 @@ tasks:
       color: red
       shape: circle
       size: 10
+  - class_path: hipster.HiPSCatalogGenerator
+    init_args:
+      encoder:
+        model_path: encoder.onnx
+      data_directory: data/gaia/xp_calibrated
+      catalog_name: Gaia XP DR3 HiPS catalog
+      hips_path: gaia/catalog
+      color: orange
+      shape: circle
+      size: 10
+      # Encode in parallel, e.g. as Slurm array job with `stage: encode`, `num_shards: N` and
+      # `shard_index: $SLURM_ARRAY_TASK_ID`, then run a single job with `stage: build`.
+      cluster:
+        mode: local
+        n_workers: 8
+        memory_per_worker: 8GB
+      # cluster:
+      #   mode: slurm
+      #   n_workers: 20
+      #   threads_per_worker: 8
+      #   memory_per_worker: 32GB
+      #   slurm:
+      #     queue: cpu
+      #     account: my-account

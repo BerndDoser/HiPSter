@@ -11,11 +11,11 @@
         <a href='https://www.space-coe.eu' target='_blank'><img src='https://space.h-its.org/space-logo.png' height='45'></a>
         <a href='https://www.h-its.org' target='_blank'><img src='https://space.h-its.org/hits-logo.png' height='45'></a>
     </div>
-    <script type='text/javascript' src='https://aladin.u-strasbg.fr/AladinLite/api/v3/{{ aladin_lite_version }}/aladin.js'charset='utf-8'></script>
-    <script type='text/javascript'>
+    <script type='module'>
+        import A from '{{ aladin_lite_url }}';
         var aladin;
             A.init.then(() => {
-            aladin = A.aladin('#aladin-lite-div', {fullScreen:true});
+            aladin = A.aladin('#aladin-lite-div', {fullScreen:true, log:false{% if image_layers %}, survey:'{{ image_layers[-1].hips_url }}'{% endif %}});
             aladin.removeLayers()
 
             {% for image_layer in image_layers %}
@@ -27,6 +27,12 @@
             var catalogLayer{{ loop.index }} = A.catalogFromURL('{{ votable.url }}', {sourceSize:{{ votable.size }}, onClick: 'showPopup', color: '{{ votable.color }}', shape: '{{ votable.shape }}', name: '{{ votable.name }}'});
             aladin.addCatalog(catalogLayer{{ loop.index }});
             catalogLayer{{ loop.index }}.hide();
+            {% endfor %}
+
+            {% for catalog in catalogs %}
+            var hipsCatalog{{ loop.index }} = A.catalogHiPS('{{ catalog.url }}', {sourceSize:{{ catalog.size }}, onClick: 'showPopup', color: '{{ catalog.color }}', shape: '{{ catalog.shape }}', name: '{{ catalog.name }}'});
+            aladin.addCatalog(hipsCatalog{{ loop.index }});
+            hipsCatalog{{ loop.index }}.hide();
             {% endfor %}
 
             aladin.setFoV(400.0);
