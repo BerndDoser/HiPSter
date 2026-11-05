@@ -1,8 +1,11 @@
 root_path: HiPSter
+overwrite: false
+verbose: true
+
 html:
-  url: http://localhost:8083
   title: HiPSter representation of Gaia XP DR3
   aladin_lite_version: latest
+
 tasks:
   - class_path: hipster.HiPSGenerator
     init_args:
@@ -24,6 +27,7 @@ tasks:
       hips_path: gaia/model_spectrum
       max_order: 2
       hierarchy: 2
+
   - class_path: hipster.HiPSGenerator
     init_args:
       decoder:
@@ -43,6 +47,7 @@ tasks:
       hips_path: gaia/model_absorption_line
       max_order: 2
       hierarchy: 2
+
   - class_path: hipster.VOTableGenerator
     init_args:
       encoder:
@@ -51,6 +56,7 @@ tasks:
       color: red
       shape: circle
       size: 10
+
   - class_path: hipster.HiPSCatalogGenerator
     init_args:
       encoder:

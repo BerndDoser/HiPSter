@@ -1,9 +1,8 @@
 root_path: output/numbering
-overwrite: true
+overwrite: false
 verbose: true
 
 html:
-  url: http://localhost:8083
   title: Numbering
   aladin_lite_version: 3.6.5
 

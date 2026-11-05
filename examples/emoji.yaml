@@ -3,8 +3,6 @@ overwrite: false
 verbose: true
 
 html:
-  url: http://localhost:8083
-  # url: https://space.h-its.org/emoji
   title: Emoji
   aladin_lite_version: 3.6.5
   aladin_lite_url: https://space.h-its.org/aladin-lite/{version}/aladin.js
