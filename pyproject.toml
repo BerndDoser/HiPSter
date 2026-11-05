@@ -16,6 +16,7 @@ dependencies = [
     "astropy>=7.0",
     "gaiaxpy>=2.1",
     "healpy>=1.18",
+    "huggingface-hub>=1.0",
     "jsonargparse[omegaconf]>=4.37",
     "matplotlib>=3.10",
     "onnxruntime>=1.21",

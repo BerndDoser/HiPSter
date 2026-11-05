@@ -15,6 +15,7 @@ from hipster.html_generator import HTMLGenerator
 
 from .create_allsky import create_allsky
 from .distortion_correction import correct_distortion
+from .hub import resolve_dataset
 from .inference import Inference
 from .task import Task
 
@@ -43,7 +44,8 @@ class DatasetProjection(Task):
 
         Args:
             encoder(Inference): Function that encodes the data.
-            data_directory (str): The directory containing the data.
+            data_directory (str): The Parquet file or directory containing the data, either local or on
+                Hugging Face as hf://datasets/<namespace>/<name>[@<revision>][/<path>].
             image_maker (callable): Function that generates the image.
             max_order (int, optional): Maximum order of the HiPS tiling. Defaults to 1.
             hierarchy (int, optional): Hierarchy of the HiPS tiling. Defaults to 1.
@@ -183,7 +185,7 @@ hips_frame           = equatorial
 
         if self.catalog is None:
             print("Calculating catalog...")
-            dataset = ds.dataset(self.data_directory, format="parquet")
+            dataset = ds.dataset(resolve_dataset(self.data_directory), format="parquet")
             table = dataset.to_table(columns=[self.data_column])
             self.num_rows = table.num_rows
             self.images = table[self.data_column]

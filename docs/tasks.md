@@ -116,8 +116,8 @@ where failed fits are stored as -99:
 - class_path: hipster.HiPSCatalogGenerator
   init_args:
     encoder:
-      model_path: data/illustris_tng_skirt_sdss/model/vae/resnet18/Perceptual/S2/encoder.onnx
-    data_directory: data/illustris_tng_skirt_sdss/dataset/
+      model_path: hf://HITS-AIN/IllustrisTNG_SKIRT_SDSS/vae/resnet18/Perceptual/S2/encoder.onnx
+    data_directory: hf://datasets/HITS-AIN/IllustrisTNG_SKIRT_SDSS
     extra_columns: [sersic_n_i, sersic_n_g]
     color_map:
       column: sersic_n_i
@@ -149,3 +149,38 @@ decoder:
 ```
 
 See the {doc}`API reference <api>` for all parameters.
+
+(hugging-face)=
+## Models and datasets from Hugging Face
+
+`model_path` and `data_directory` also accept paths on the
+[Hugging Face Hub](https://huggingface.co), so the files don't have to be downloaded manually.
+They are downloaded on first use into the Hugging Face cache (`~/.cache/huggingface/hub`, see
+`HF_HOME`) and reused from there:
+
+| Path | Refers to |
+|---|---|
+| `hf://<namespace>/<name>/<file>` | A file in a model repository, e.g. an ONNX model. |
+| `hf://datasets/<namespace>/<name>` | All Parquet files of a dataset repository. |
+| `hf://datasets/<namespace>/<name>/<directory>` | All Parquet files below a directory of a dataset repository. |
+| `hf://datasets/<namespace>/<name>/<file>.parquet` | A single Parquet file of a dataset repository. |
+
+A branch, tag or commit can be pinned by appending `@<revision>` to the repository name, e.g.
+`hf://datasets/HITS-AIN/IllustrisTNG_SKIRT_SDSS@main`.
+
+```yaml
+- class_path: hipster.DatasetProjection
+  init_args:
+    encoder:
+      model_path: hf://HITS-AIN/IllustrisTNG_SKIRT_SDSS/vae/resnet18/Perceptual/S2/encoder.onnx
+    data_directory: hf://datasets/HITS-AIN/IllustrisTNG_SKIRT_SDSS
+```
+
+Models are downloaded when the config is loaded, datasets only when a task is executed, so
+`--only_html` and skipped tasks don't download any data. The download is controlled by the usual
+Hugging Face environment variables:
+
+- `HF_TOKEN`: access token for private or gated repositories.
+- `HF_HUB_OFFLINE=1`: only use the files in the cache.
+- `HF_HUB_DISABLE_XET=1`: use plain HTTP downloads if the Xet storage backend fails on your
+  network.
