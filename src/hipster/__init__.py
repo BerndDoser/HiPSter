@@ -1,6 +1,7 @@
 import importlib.metadata
 
 from .absorption_line_plotter import AbsorptionLinePlotter
+from .color_map import ColorMap
 from .dataset_projection import DatasetProjection
 from .hips_catalog_generator import HiPSCatalogGenerator
 from .hips_generator import HiPSGenerator
@@ -17,6 +18,7 @@ from .votable_generator import VOTableGenerator
 __version__ = importlib.metadata.version("astro-hipster")
 __all__ = [
     "AbsorptionLinePlotter",
+    "ColorMap",
     "DatasetProjection",
     "HTMLGenerator",
     "HiPSCatalogGenerator",

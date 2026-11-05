@@ -43,6 +43,12 @@ tasks:
       color: red
       shape: circle
       size: 5
+      extra_columns: [sersic_n_i, sersic_n_g]
+      color_map:
+        column: sersic_n_i
+        vmin: 0.2
+        vmax: 10
+        log: true
 
   - class_path: hipster.HiPSCatalogGenerator
     init_args:
@@ -55,6 +61,12 @@ tasks:
       color: orange
       shape: circle
       size: 5
+      extra_columns: [sersic_n_i, sersic_n_g]
+      color_map:
+        column: sersic_n_i
+        vmin: 0.2
+        vmax: 10
+        log: true
       cluster:
         mode: local
         n_workers: 4

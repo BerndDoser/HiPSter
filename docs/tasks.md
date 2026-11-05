@@ -96,6 +96,36 @@ The HTML page then only contains the catalog. Regenerate it with the full config
 
 A warning is printed if the HiPS catalog contains fewer objects than the input.
 
+## Coloring catalogs
+
+Coloring the sources by a physical property shows how the model orders the data in the latent
+space. Both catalog tasks accept:
+
+- `extra_columns`: columns of the input dataset copied into the catalog. They are shown in the
+  popup when a source is clicked.
+- `color_map`: a {class}`~hipster.ColorMap` that colors each source by the value of a catalog
+  column, which is added to the catalog if needed. Values outside `vmin` and `vmax` are clipped
+  to the ends of the matplotlib colormap `cmap`. With `log: true` the scale is logarithmic and
+  non-positive values are drawn in `nan_color`, like missing values. The page shows a color bar
+  for each colored catalog.
+
+The IllustrisTNG dataset contains the Sérsic index of each galaxy in the SDSS *i* and *g* bands,
+where failed fits are stored as -99:
+
+```yaml
+- class_path: hipster.HiPSCatalogGenerator
+  init_args:
+    encoder:
+      model_path: data/illustris_tng_skirt_sdss/model/vae/resnet18/Perceptual/S2/encoder.onnx
+    data_directory: data/illustris_tng_skirt_sdss/dataset/
+    extra_columns: [sersic_n_i, sersic_n_g]
+    color_map:
+      column: sersic_n_i
+      vmin: 0.2
+      vmax: 10
+      log: true
+```
+
 ## Image makers
 
 The `image_maker` of a task turns the model output into a tile image.

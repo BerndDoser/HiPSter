@@ -36,6 +36,7 @@ Utilities
    :toctree: generated
    :nosignatures:
 
+   ColorMap
    Inference
    HTMLGenerator
    ImageGenerator

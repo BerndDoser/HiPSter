@@ -20,12 +20,14 @@ def gaia_hips_catalog_generator(tmp_path, **kwargs) -> HiPSCatalogGenerator:
 
 def test_encode_shards(tmp_path):
     for shard_index in range(2):
-        gaia_hips_catalog_generator(tmp_path, stage="encode", num_shards=2, shard_index=shard_index).execute()
+        gaia_hips_catalog_generator(
+            tmp_path, stage="encode", num_shards=2, shard_index=shard_index, extra_columns=["ra"]
+        ).execute()
 
     assert len(list((tmp_path / "catalog_parquet").glob("part-*.parquet"))) == 2
     table = pq.read_table(tmp_path / "catalog_parquet")
     assert table.num_rows == 46
-    assert {"source_id", "RA2000", "DEC2000", "x", "y", "z", "score"} <= set(table.column_names)
+    assert {"source_id", "RA2000", "DEC2000", "x", "y", "z", "ra", "score"} <= set(table.column_names)
 
 
 def test_parquet_path_inside_hips_catalog(tmp_path):

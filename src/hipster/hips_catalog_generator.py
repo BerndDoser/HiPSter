@@ -205,5 +205,6 @@ class HiPSCatalogGenerator(VOTableGenerator):
                 color=self.color,
                 shape=self.shape,
                 size=self.size,
+                color_map=self.color_map,
             )
         )

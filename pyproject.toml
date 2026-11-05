@@ -36,10 +36,11 @@ cuda = [
     "nvidia-cudnn-cu13>=9.24.0.43",
 ]
 dev = [
-    "ipykernel >=6.29",
+    "astro-hipster[catalog]",
+    "ipykernel>=6.29",
     "pre-commit>=4.7.0",
-    "pytest >=8.3",
-    "ruff >=0.11",
+    "pytest>=8.3",
+    "ruff>=0.11",
 ]
 docs = [
     "myst-parser>=5.0.0",

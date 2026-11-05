@@ -6,10 +6,10 @@ resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'emscripten'",
     "python_full_version >= '3.14' and sys_platform != 'emscripten' and sys_platform != 'win32'",
     "python_full_version == '3.13.*' and sys_platform == 'win32'",
-    "python_full_version < '3.13' and sys_platform == 'win32'",
     "python_full_version == '3.13.*' and sys_platform == 'emscripten'",
-    "python_full_version < '3.13' and sys_platform == 'emscripten'",
     "python_full_version == '3.13.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "python_full_version < '3.13' and sys_platform == 'win32'",
+    "python_full_version < '3.13' and sys_platform == 'emscripten'",
     "python_full_version < '3.13' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 required-markers = [
@@ -231,7 +231,7 @@ wheels = [
 
 [[package]]
 name = "astro-hipster"
-version = "0.1.1"
+version = "0.2"
 source = { editable = "." }
 dependencies = [
     { name = "astropy" },
@@ -257,6 +257,7 @@ cuda = [
     { name = "onnxruntime-gpu" },
 ]
 dev = [
+    { name = "hipscatalog-gen" },
     { name = "ipykernel" },
     { name = "pre-commit" },
     { name = "pytest" },
@@ -275,6 +276,7 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "astro-hipster", extras = ["catalog"], marker = "extra == 'dev'" },
     { name = "astropy", specifier = ">=7.0" },
     { name = "datasets", specifier = ">=4.8.5" },
     { name = "gaiaxpy", specifier = ">=2.1" },

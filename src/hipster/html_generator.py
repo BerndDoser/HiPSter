@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 from jinja2 import Environment, FileSystemLoader
 
+from .color_map import ColorMap
+
 
 class HTMLGenerator:
     def __init__(
@@ -54,6 +56,7 @@ class HTMLGenerator:
         color: str
         shape: str
         size: int
+        color_map: ColorMap | None = None
 
     def add_votable(self, votable: VOTable) -> None:
         """Add a VOTable layer to the HTML page.
@@ -69,6 +72,7 @@ class HTMLGenerator:
         color: str
         shape: str
         size: int
+        color_map: ColorMap | None = None
 
     def add_catalog(self, catalog: Catalog) -> None:
         """Add a HiPS catalog layer to the HTML page.

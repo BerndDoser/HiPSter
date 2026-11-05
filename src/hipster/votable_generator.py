@@ -15,6 +15,7 @@ from PIL import Image
 
 from hipster.html_generator import HTMLGenerator
 
+from .color_map import ColorMap
 from .inference import Inference
 from .task import Task
 
@@ -32,6 +33,8 @@ class VOTableGenerator(Task):
         color: str = "red",
         shape: str = "circle",
         size: int = 10,
+        extra_columns: list[str] | None = None,
+        color_map: ColorMap | None = None,
         **kwargs,
     ):
         """Generates a catalog of data.
@@ -47,6 +50,10 @@ class VOTableGenerator(Task):
             color (str, optional): The color of the catalog. Defaults to "red".
             shape (str, optional): The shape of the catalog. Defaults to "circle".
             size (int, optional): The size of the catalog. Defaults to 10.
+            extra_columns (list[str], optional): Columns of the dataset copied into the catalog,
+                e.g. morphological parameters. Defaults to None.
+            color_map (ColorMap, optional): Colors the sources by a catalog column, which is added to
+                extra_columns if needed. Defaults to None, which uses the single color.
             **kwargs: Additional keyword arguments.
         """
         super().__init__("VOTableGenerator", **kwargs)
@@ -61,16 +68,23 @@ class VOTableGenerator(Task):
         self.color = color
         self.shape = shape
         self.size = size
+        self.color_map = color_map
+        self.extra_columns = []
+        base_columns = self._catalog_columns()
+        columns = list(extra_columns or []) + ([color_map.column] if color_map else [])
+        self.extra_columns = [column for column in dict.fromkeys(columns) if column not in base_columns]
 
     def _catalog_columns(self) -> list[str]:
         """Returns the column names of the catalog."""
         if self.dataset == "gaia":
-            return ["preview", "source_id", "RA2000", "DEC2000", "x", "y", "z"]
-        if self.dataset == "illustris":
-            return ["preview", "simulation", "snapshot", "subhalo_id", "RA2000", "DEC2000", "x", "y", "z"]
-        if self.dataset in ["celebrities", "emoji"]:
-            return ["preview", "name", "RA2000", "DEC2000"]
-        raise ValueError(f"Unknown dataset: {self.dataset}")
+            columns = ["preview", "source_id", "RA2000", "DEC2000", "x", "y", "z"]
+        elif self.dataset == "illustris":
+            columns = ["preview", "simulation", "snapshot", "subhalo_id", "RA2000", "DEC2000", "x", "y", "z"]
+        elif self.dataset in ["celebrities", "emoji"]:
+            columns = ["preview", "name", "RA2000", "DEC2000"]
+        else:
+            raise ValueError(f"Unknown dataset: {self.dataset}")
+        return columns + self.extra_columns
 
     def _open_dataset(self) -> ds.Dataset:
         """Opens the input dataset."""
@@ -88,6 +102,12 @@ class VOTableGenerator(Task):
 
         columns = self._catalog_columns()
         dataset = self._open_dataset()
+
+        missing = [column for column in self.extra_columns if column not in dataset.schema.names]
+        if missing:
+            raise ValueError(
+                f"Columns {missing} not found in {self.data_directory}, the dataset may need to be downloaded again"
+            )
 
         # If the dataset is Celebrities, we need to load it using the Hugging Face datasets library to get the labels.
         if self.dataset == "celebrities":
@@ -168,6 +188,8 @@ class VOTableGenerator(Task):
                 catalog["x"].extend(latent_position[:, 0])
                 catalog["y"].extend(latent_position[:, 1])
                 catalog["z"].extend(latent_position[:, 2])
+            for column in self.extra_columns:
+                catalog[column].extend(batch[column].to_pylist())
 
             yield pd.DataFrame(catalog)
 
@@ -224,5 +246,6 @@ class VOTableGenerator(Task):
                 color=self.color,
                 shape=self.shape,
                 size=self.size,
+                color_map=self.color_map,
             )
         )
