@@ -51,8 +51,14 @@ class Inference:
             input_name (str, optional): Name of the model input. Defaults to "x".
             batch_size (int, optional): The batch size to use. Defaults to 256.
         """
+        # Set the thread count explicitly: otherwise onnxruntime tries to pin its threads to
+        # the physical core ids, which fails with "pthread_setaffinity_np ... Invalid argument"
+        # inside Slurm/cgroup CPU allocations.
+        options = ort.SessionOptions()
+        options.intra_op_num_threads = len(os.sched_getaffinity(0))
         self.model = ort.InferenceSession(
             resolve_file(model_path),
+            sess_options=options,
             providers=self.__get_providers(),
         )
         self.input_name = input_name
