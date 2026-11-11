@@ -64,9 +64,12 @@ tasks:
       extra_columns: [sersic_n_i, sersic_n_g]
       color_map:
         column: sersic_n_i
-        vmin: 0.2
-        vmax: 10
-        log: true
+        # vmin: 1.0
+        # vmax: 4.0
+        vmin_percentile: 5
+        vmax_percentile: 95
+        log: false
+        cmap: coolwarm
       cluster:
         mode: local
         n_workers: 4
