@@ -25,6 +25,9 @@ class ColorMap:
     nan_color: str = "#808080"
 
     def __post_init__(self) -> None:
+
+        # numpy.percentile is used to compute vmin and vmax if they are not provided
+
         if self.vmin >= self.vmax:
             raise ValueError(f"vmin must be smaller than vmax, got {self.vmin} and {self.vmax}")
         if self.log and self.vmin <= 0:
