@@ -1,9 +1,8 @@
 root_path: output/IllustrisTNG_SKIRT_SDSS
-overwrite: true
+overwrite: false
 verbose: true
 
 html:
-  url: https://space.h-its.org/IllustrisTNG_SKIRT_SDSS
   title: HiPSter representation of IllustrisTNG SKIRT SDSS
   aladin_lite_version: 3.6.5
 
@@ -11,11 +10,11 @@ tasks:
   - class_path: hipster.HiPSGenerator
     init_args:
       decoder:
-        model_path: data/illustris_tng_skirt_sdss/model/vae/resnet18/Perceptual/S2/decoder.onnx
+        model_path: hf://HITS-AIN/IllustrisTNG_SKIRT_SDSS/vae/resnet18/Perceptual/S2/decoder.onnx
         input_name: z
       image_maker:
         class_path: hipster.ImagePlotter
-      max_order: 5
+      max_order: 3
       hierarchy: 4
       hips_id: IllustrisTNG SKIRT SDSS
       hips_name: IllustrisTNG SKIRT SDSS model
@@ -24,11 +23,11 @@ tasks:
   - class_path: hipster.DatasetProjection
     init_args:
       encoder:
-        model_path: data/illustris_tng_skirt_sdss/model/vae/resnet18/Perceptual/S2/encoder.onnx
-      data_directory: data/illustris_tng_skirt_sdss/dataset/data/train-00000-of-00001.parquet
+        model_path: hf://HITS-AIN/IllustrisTNG_SKIRT_SDSS/vae/resnet18/Perceptual/S2/encoder.onnx
+      data_directory: hf://datasets/HITS-AIN/IllustrisTNG_SKIRT_SDSS
       image_maker:
         class_path: hipster.ImagePlotter
-      max_order: 5
+      max_order: 3
       hierarchy: 4
       hips_id: IllustrisTNG SKIRT SDSS
       hips_name: IllustrisTNG SKIRT SDSS projection dewarped
@@ -38,8 +37,8 @@ tasks:
   - class_path: hipster.VOTableGenerator
     init_args:
       encoder:
-        model_path: data/illustris_tng_skirt_sdss/model/vae/resnet18/Perceptual/S2/encoder.onnx
-      data_directory: data/illustris_tng_skirt_sdss/dataset/
+        model_path: hf://HITS-AIN/IllustrisTNG_SKIRT_SDSS/vae/resnet18/Perceptual/S2/encoder.onnx
+      data_directory: hf://datasets/HITS-AIN/IllustrisTNG_SKIRT_SDSS
       color: red
       shape: circle
       size: 5
@@ -53,11 +52,11 @@ tasks:
   - class_path: hipster.HiPSCatalogGenerator
     init_args:
       encoder:
-        model_path: data/illustris_tng_skirt_sdss/model/vae/resnet18/Perceptual/S2/encoder.onnx
-      data_directory: data/illustris_tng_skirt_sdss/dataset/
+        model_path: hf://HITS-AIN/IllustrisTNG_SKIRT_SDSS/vae/resnet18/Perceptual/S2/encoder.onnx
+      data_directory: hf://datasets/HITS-AIN/IllustrisTNG_SKIRT_SDSS
       catalog_name: IllustrisTNG SKIRT SDSS HiPS catalog
       hips_path: catalog
-      level_limit: 8
+      level_limit: 4
       color: orange
       shape: circle
       size: 5

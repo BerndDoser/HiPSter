@@ -8,7 +8,6 @@ import healpy
 import numpy as np
 import pandas as pd
 import pyarrow.dataset as ds
-import pyarrow.parquet as pq
 from astropy.io.votable import writeto
 from astropy.table import Table
 from PIL import Image
@@ -16,6 +15,7 @@ from PIL import Image
 from hipster.html_generator import HTMLGenerator
 
 from .color_map import ColorMap
+from .hub import resolve_dataset
 from .inference import Inference
 from .task import Task
 
@@ -41,7 +41,8 @@ class VOTableGenerator(Task):
 
         Args:
             encoder (callable): Function that encodes the data.
-            data_directory (str): The directory containing the data.
+            data_directory (str): The Parquet file or directory containing the data, either local or on
+                Hugging Face as hf://datasets/<namespace>/<name>[@<revision>][/<path>].
             data_column (str): The column name of the data. Defaults to "image".
             dataset (str): The type of dataset. Defaults to "gaia".
             output_file (str, optional): The output file name. Defaults to "votable.xml".
@@ -88,7 +89,7 @@ class VOTableGenerator(Task):
 
     def _open_dataset(self) -> ds.Dataset:
         """Opens the input dataset."""
-        return ds.dataset(self.data_directory, format="parquet")
+        return ds.dataset(resolve_dataset(self.data_directory), format="parquet")
 
     def get_catalog(self) -> pd.DataFrame:
         """Generates the catalog."""
@@ -111,7 +112,7 @@ class VOTableGenerator(Task):
 
         # If the dataset is Celebrities, we need to load it using the Hugging Face datasets library to get the labels.
         if self.dataset == "celebrities":
-            meta = json.loads(pq.read_schema(self.data_directory).metadata[b"huggingface"])
+            meta = json.loads(dataset.schema.metadata[b"huggingface"])
             names = meta["info"]["features"]["label"]["names"]
 
         # Reshape the data if the shape is stored in the metadata.

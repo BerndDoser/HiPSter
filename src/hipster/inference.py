@@ -33,6 +33,8 @@ _preload_nvidia_libs()
 # Suppress flake8 error for import order, since onnxruntime must be imported after preloading nvidia libs
 import onnxruntime as ort
 
+from .hub import resolve_file
+
 
 class Inference:
     def __init__(
@@ -41,8 +43,22 @@ class Inference:
         input_name: str = "x",
         batch_size: int = 256,
     ):
+        """Runs an ONNX model batch-wise.
+
+        Args:
+            model_path (str | os.PathLike): Path of the ONNX model, either local or on Hugging Face
+                as hf://<namespace>/<name>[@<revision>]/<path>.
+            input_name (str, optional): Name of the model input. Defaults to "x".
+            batch_size (int, optional): The batch size to use. Defaults to 256.
+        """
+        # Set the thread count explicitly: otherwise onnxruntime tries to pin its threads to
+        # the physical core ids, which fails with "pthread_setaffinity_np ... Invalid argument"
+        # inside Slurm/cgroup CPU allocations.
+        options = ort.SessionOptions()
+        options.intra_op_num_threads = len(os.sched_getaffinity(0))
         self.model = ort.InferenceSession(
-            os.fspath(model_path),
+            resolve_file(model_path),
+            sess_options=options,
             providers=self.__get_providers(),
         )
         self.input_name = input_name

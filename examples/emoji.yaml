@@ -3,8 +3,6 @@ overwrite: false
 verbose: true
 
 html:
-  url: http://localhost:8083
-  # url: https://space.h-its.org/emoji
   title: Emoji
   aladin_lite_version: 3.6.5
   aladin_lite_url: https://space.h-its.org/aladin-lite/{version}/aladin.js
@@ -13,8 +11,8 @@ tasks:
   # - class_path: hipster.DatasetProjection
   #   init_args:
   #     encoder:
-  #       model_path: data/emoji/model/vae/resnet18/S2/encoder.onnx
-  #     data_directory: data/emoji/dataset/data/train-00000-of-00001-38cc4fa96c139e86.parquet
+  #       model_path: hf://bernddoser/emoji/vae/resnet18/S2/encoder.onnx
+  #     data_directory: hf://datasets/valhalla/emoji-dataset
   #     image_maker:
   #       class_path: hipster.ImagePlotter
   #     max_order: 4
@@ -27,8 +25,8 @@ tasks:
   # - class_path: hipster.DatasetProjection
   #   init_args:
   #     encoder:
-  #       model_path: data/emoji/model/vae/resnet18/S2/encoder.onnx
-  #     data_directory: data/emoji/dataset/data/train-00000-of-00001-38cc4fa96c139e86.parquet
+  #       model_path: hf://bernddoser/emoji/vae/resnet18/S2/encoder.onnx
+  #     data_directory: hf://datasets/valhalla/emoji-dataset
   #     image_maker:
   #       class_path: hipster.ImagePlotter
   #     max_order: 4
@@ -41,7 +39,7 @@ tasks:
   - class_path: hipster.HiPSGenerator
     init_args:
       decoder:
-        model_path: data/emoji/model/vae/resnet18/S2/decoder.onnx
+        model_path: hf://bernddoser/emoji/vae/resnet18/S2/decoder.onnx
         input_name: z
       image_maker:
         class_path: hipster.ImagePlotter
@@ -55,8 +53,8 @@ tasks:
   - class_path: hipster.HiPSCatalogGenerator
     init_args:
       encoder:
-        model_path: data/emoji/model/vae/resnet18/S2/encoder.onnx
-      data_directory: data/emoji/dataset/data/train-00000-of-00001-38cc4fa96c139e86.parquet
+        model_path: hf://bernddoser/emoji/vae/resnet18/S2/encoder.onnx
+      data_directory: hf://datasets/valhalla/emoji-dataset
       dataset: emoji
       level_limit: 4
       catalog_name: Emoji catalog
